@@ -2,17 +2,6 @@
 set -eo pipefail
 [[ $DOKKU_TRACE ]] && set -x
 
-redash_list_apps_and_expiry() {
-  #shellcheck disable=SC2034
-  declare desc="list all redash apps"
-
-  for app in $(dokku_apps); do
-    if [[ "$app" == "=====>" ]] || [[ "$app" == "My" ]] || [[ "$app" == "Apps" ]]; then continue; fi
-    echo -e "$app"
-  done
-}
-
-
 dokku_log_action_custom() {
   declare desc="action log formatter"
   local GREEN='\033[1;32m'
