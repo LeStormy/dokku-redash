@@ -6,6 +6,9 @@ set -eo pipefail
 plugin-install() {
   pull-docker-image() {
     declare IMAGE="$1"
+
+    ## TODO if dokku postgres not exists || dokku redis not exists
+
     if [[ "$(docker images -q "${IMAGE}" 2>/dev/null)" == "" ]]; then
       docker pull "${IMAGE}"
     fi
