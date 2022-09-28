@@ -1,0 +1,4 @@
+[plugin]
+description = "Setup a Redash app via Dokku"
+version = "0.1.0"
+[plugin.config]

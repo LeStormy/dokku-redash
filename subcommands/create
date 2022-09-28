@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+source "$PLUGIN_CORE_AVAILABLE_PATH/apps/functions"
+source "$PLUGIN_AVAILABLE_PATH/common/functions"
+source "$PLUGIN_AVAILABLE_PATH/redash/functions"
+source "$PLUGIN_AVAILABLE_PATH/git/functions"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/config"
+
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+
+cmd-redash-create() {
+  #shellcheck disable=SC2034
+  declare desc="create a redash app"
+  declare cmd="redash:create"
+
+  echo "$PLUGIN_CORE_AVAILABLE_PATH"
+  [[ "$1" == "$cmd" ]] && shift 1
+  
+  local app="$1"
+  local repo_arg="$2"
+
+  local repo=${repo_arg:=$REDASH_OFFICIAL_REPO}
+
+  dokku_log_action_custom "Creating Redash app"
+  apps_create $app
+
+  (
+    source "$PLUGIN_AVAILABLE_PATH/postgres/functions"
+    source "$PLUGIN_AVAILABLE_PATH/postgres/common-functions"
+    dokku_log_action_custom "Creating Redash postgres service"
+    service_create $app
+    service_link $app $app
+  )
+
+  (
+    source "$PLUGIN_AVAILABLE_PATH/redis/functions"
+    source "$PLUGIN_AVAILABLE_PATH/redis/common-functions"
+    dokku_log_action_custom "Creating Redash redis service"
+    service_create $app
+    service_link $app $app
+  )
+
+  dokku_log_action_custom "Adding default configuration"
+  config_set --no-restart $app REDASH_COOKIE_SECRET=`openssl rand -hex 16` 
+  config_set --no-restart $app REDASH_SECRET_KEY=`openssl rand -hex 16`
+  config_set --no-restart $app REDASH_DATABASE_URL="`dokku postgres:info $app --dsn`"
+  config_set --no-restart $app REDASH_REDIS_URL="`dokku redis:info $app --dsn`"
+  config_set --no-restart $app DOKKU_PROXY_PORT_MAP="http:80:5000"
+
+  dokku_log_action_custom "Building Redash app from repo"
+  dokku git:sync --build "$app" "$repo"
+
+  dokku_log_action_custom "Creating Redash DB"
+  dokku run $app create_db
+
+  dokku_log_custom "***************\n\nRedash app deployed\n\nYou still need to set its domain and setup SSL for it.\n\n***************"
+}
+
+cmd-redash-create "$@"

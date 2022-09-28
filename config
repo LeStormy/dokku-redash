@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+
+export REDASH_OFFICIAL_REPO="https://github.com/getredash/redash"

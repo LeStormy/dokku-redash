@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/config"
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+
+plugin-install() {
+  pull-docker-image() {
+    declare IMAGE="$1"
+    if [[ "$(docker images -q "${IMAGE}" 2>/dev/null)" == "" ]]; then
+      docker pull "${IMAGE}"
+    fi
+  }
+
+  mkdir -p "${DOKKU_LIB_ROOT}/data/redash"
+  chown -R "${DOKKU_SYSTEM_USER}:${DOKKU_SYSTEM_GROUP}" "${DOKKU_LIB_ROOT}/data/redash"
+}
+
+plugin-install "$@"
