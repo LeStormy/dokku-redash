@@ -28,5 +28,6 @@ fn-help-content() {
   declare desc="return help content"
   cat <<help_content
     redash:create <app> <repo>, Create a Redash app from the given repo (or the official repo if none given)
+    redash:destroy <app>, Destroys a Redash app and all related services
 help_content
 }

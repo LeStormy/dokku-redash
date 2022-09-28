@@ -19,6 +19,8 @@ sudo dokku plugin:update redash
 ```
 $ dokku redash:help
     redash:create <app> <repo>         Create a Redash app from the given repo (or the official repo if none given)
+    redash:destroy <app>               Destroys a Redash app and all related services
+
 ```
 
 ## Dependencies

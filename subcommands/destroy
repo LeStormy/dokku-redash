@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+source "$PLUGIN_CORE_AVAILABLE_PATH/apps/functions"
+source "$PLUGIN_AVAILABLE_PATH/common/functions"
+source "$PLUGIN_AVAILABLE_PATH/redash/functions"
+source "$PLUGIN_AVAILABLE_PATH/git/functions"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/config"
+
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+
+cmd-redash-destroy() {
+  #shellcheck disable=SC2034
+  declare desc="destroy a redash app and all related services"
+  declare cmd="redash:destroy"
+
+  echo "$PLUGIN_CORE_AVAILABLE_PATH"
+  [[ "$1" == "$cmd" ]] && shift 1
+  
+  local app="$1"
+
+  dokku_log_action_custom "Destroying Redash app"
+  apps_destroy $app
+
+  dokku_log_action_custom "Destroying Redash postgres service"
+  dokku postgres:destroy $app --force
+
+  dokku_log_action_custom "Destroying Redash redis service"
+  dokku redis:destroy $app --force
+
+  dokku_log_custom "***************\n\nRedash app destroyed\n\n***************"
+}
+
+cmd-redash-create "$@"
