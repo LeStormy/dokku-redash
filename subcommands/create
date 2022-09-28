@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 source "$PLUGIN_CORE_AVAILABLE_PATH/apps/functions"
-source "$PLUGIN_AVAILABLE_PATH/common/functions"
 source "$PLUGIN_AVAILABLE_PATH/redash/functions"
-source "$PLUGIN_AVAILABLE_PATH/git/functions"
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/config"
 
 set -eo pipefail

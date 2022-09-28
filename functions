@@ -11,7 +11,7 @@ dokku_log_action_custom() {
 }
 
 dokku_log_custom() {
-  declare desc="action log formatter"
+  declare desc="basic log formatter"
   local GREEN='\033[1;32m'
   local NC='\033[0m'
 
