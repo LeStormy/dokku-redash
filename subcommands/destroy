@@ -28,4 +28,4 @@ cmd-redash-destroy() {
   dokku_log_custom "***************\n\nRedash app destroyed\n\n***************"
 }
 
-cmd-redash-create "$@"
+cmd-redash-destroy "$@"
